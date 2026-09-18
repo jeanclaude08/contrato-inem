@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INEM GTA RP - Gerador de Contratos & Painel de Gestão</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ctp: {
+                            rosewater: '#f5e0dc',
+                            flamingo: '#f2cdcd',
+                            pink: '#f5c2e7',
+                            mauve: '#cba6f7',
+                            red: '#f38ba8',
+                            maroon: '#eba0ac',
+                            peach: '#fab387',
+                            yellow: '#f9e2af',
+                            green: '#a6e3a1',
+                            teal: '#94e2d5',
+                            sky: '#89dceb',
+                            sapphire: '#74c7ec',
+                            blue: '#89b4fa',
+                            lavender: '#b4befe',
+                            text: '#cdd6f4',
+                            subtext1: '#bac2de',
+                            subtext0: '#a6adc8',
+                            overlay2: '#9399b2',
+                            overlay1: '#7f849c',
+                            overlay0: '#6c7086',
+                            surface2: '#585b70',
+                            surface1: '#45475a',
+                            surface0: '#313244',
+                            base: '#1e1e2e',
+                            mantle: '#181825',
+                            crust: '#11111b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom scrollbar styling for Catppuccin theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #181825;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #45475a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #585b70;
+        }
+
+        /* Glassmorphism subtle touches */
+        .glass-panel {
+            background: rgba(49, 50, 68, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Print formatting optimized for official document output */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #document-view {
+                border: none !important;
+                box-shadow: none !important;
+                background: white !important;
+                color: #111 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .document-sheet {
+                border: 2px solid #000 !important;
+                box-shadow: none !important;
+                color: #111 !important;
+                background: white !important;
+            }
+            .document-sheet * {
+                color: #111 !important;
+                border-color: #333 !important;
+            }
+            .print-badge {
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-ctp-base text-ctp-text font-sans antialiased min-h-screen flex flex-col selection:bg-ctp-mauve selection:text-ctp-crust">
+
+    <header class="no-print bg-ctp-mantle border-b border-ctp-surface0 px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-30 shadow-lg">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-ctp-yellow via-ctp-teal to-ctp-blue flex items-center justify-center text-ctp-crust font-black text-xl shadow-md">
+                <i class="fa-solid fa-truck-medical"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-ctp-text tracking-tight flex items-center gap-2">
+                    INEM Portugal <span class="text-xs font-mono font-normal bg-ctp-surface0 text-ctp-teal px-2 py-0.5 rounded-full border border-ctp-surface1">GTA RP Command</span>
+                </h1>
+                <p class="text-xs text-ctp-subtext0">Gerador Oficial de Contratos e Gestão Centralizada de Pessoal</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="createNewContract()" class="bg-ctp-surface0 hover:bg-ctp-surface1 text-ctp-text px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-ctp-surface1">
+                <i class="fa-solid fa-file-circle-plus text-ctp-teal"></i> Novo Contrato
+            </button>
+            <button onclick="exportDataJSON()" class="bg-ctp-surface0 hover:bg-ctp-surface1 text-ctp-subtext1 hover:text-ctp-text px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-ctp-surface1" title="Exportar Cópia de Segurança">
+                <i class="fa-solid fa-download text-ctp-sapphire"></i> Exportar DB
+            </button>
+            <label class="bg-ctp-surface0 hover:bg-ctp-surface1 text-ctp-subtext1 hover:text-ctp-text px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-ctp-surface1 cursor-pointer" title="Importar Cópia de Segurança">
+                <i class="fa-solid fa-upload text-ctp-mauve"></i> Importar
+                <input type="file" id="importFile" accept=".json" onchange="importDataJSON(event)" class="hidden">
+            </label>
+            <button onclick="window.print()" class="bg-gradient-to-r from-ctp-teal to-ctp-sapphire text-ctp-crust font-bold px-4 py-2 rounded-lg text-sm shadow-md hover:brightness-110 transition flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Exportar PDF / Imprimir
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 sm:p-6 max-w-[1800px] mx-auto w-full">
+        
+        <!-- LEFT COLUMN: Form Controls & Contract History -->
+        <section class="no-print lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- FORM CARD -->
+            <div class="glass-panel rounded-2xl p-5 border border-ctp-surface1 shadow-xl">
+                <div class="flex items-center justify-between pb-3 mb-4 border-b border-ctp-surface0">
+                    <h2 class="text-base font-bold text-ctp-mauve flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Dados do Colaborador
+                    </h2>
+                    <span id="form-mode-indicator" class="text-xs font-mono bg-ctp-surface0 text-ctp-yellow px-2 py-0.5 rounded border border-ctp-surface1">
+                        Modo: Edição
+                    </span>
+                </div>
+
+                <form id="contract-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <!-- Hidden ID for state management -->
+                    <input type="hidden" id="contract-id" value="">
+
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                            Nome Completo IC <span class="text-ctp-red">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-ctp-overlay1">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" id="input-fullname" required placeholder="Ex: Dr. Afonso Salgado"
+                                oninput="updateLivePreview()"
+                                class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl pl-10 pr-3 py-2.5 text-sm text-ctp-text placeholder-ctp-overlay0 focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                        </div>
+                    </div>
+
+                    <!-- Passport / ID & Contract Number Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                                Nº Passaporte / ID <span class="text-ctp-red">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-ctp-overlay1">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </span>
+                                <input type="text" id="input-passport" required placeholder="Ex: 10482"
+                                    oninput="updateLivePreview()"
+                                    class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl pl-10 pr-3 py-2.5 text-sm text-ctp-text placeholder-ctp-overlay0 focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1 flex justify-between">
+                                <span>Nº do Contrato</span>
+                                <button type="button" onclick="generateContractNumber()" class="text-ctp-teal hover:underline lowercase font-normal">regenerar</button>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-ctp-overlay1">
+                                    <i class="fa-solid fa-hashtag"></i>
+                                </span>
+                                <input type="text" id="input-contract-num" required
+                                    oninput="updateLivePreview()"
+                                    class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl pl-10 pr-3 py-2.5 text-sm font-mono text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cargo / Role & Contract Status -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                                Cargo / Função <span class="text-ctp-red">*</span>
+                            </label>
+                            <select id="input-role" onchange="updateLivePreview()" required
+                                class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl px-3 py-2.5 text-sm text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                                <option value="Médico Estagiário">Médico Estagiário</option>
+                                <option value="Socorrista do INEM">Socorrista do INEM</option>
+                                <option value="Paramédico Principal">Paramédico Principal</option>
+                                <option value="Encarregado de Turno">Encarregado de Turno</option>
+                                <option value="Sub-Diretor Operacional">Sub-Diretor Operacional</option>
+                                <option value="Diretor Geral do INEM">Diretor Geral do INEM</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                                Estado do Contrato
+                            </label>
+                            <select id="input-status" onchange="updateLivePreview()"
+                                class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl px-3 py-2.5 text-sm text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                                <option value="Ativo">Ativo (Válido)</option>
+                                <option value="Suspenso">Suspenso</option>
+                                <option value="Rescindido">Rescindido / Exonerado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Admission Date & Expiry Date -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                                Data de Admissão
+                            </label>
+                            <input type="date" id="input-start-date" required onchange="updateLivePreview()"
+                                class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl px-3 py-2.5 text-sm text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                                Data de Validade
+                            </label>
+                            <input type="date" id="input-end-date" required onchange="updateLivePreview()"
+                                class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl px-3 py-2.5 text-sm text-ctp-text focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition">
+                        </div>
+                    </div>
+
+                    <!-- Clauses and Special Notes -->
+                    <div>
+                        <label class="block text-xs font-semibold text-ctp-subtext0 uppercase tracking-wider mb-1">
+                            Observações / Cláusulas Especiais
+                        </label>
+                        <textarea id="input-notes" rows="2" placeholder="Ex: Período experimental de 14 dias com supervisão obrigatória do comando."
+                            oninput="updateLivePreview()"
+                            class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl px-3 py-2 text-sm text-ctp-text placeholder-ctp-overlay0 focus:outline-none focus:border-ctp-mauve focus:ring-1 focus:ring-ctp-mauve transition"></textarea>
+                    </div>
+
+                    <!-- Submit & Quick Action Buttons -->
+                    <div class="flex gap-3 pt-2">
+                        <button type="submit" class="flex-1 bg-ctp-mauve hover:bg-opacity-90 text-ctp-crust font-bold py-2.5 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar no Registo
+                        </button>
+                        <button type="button" onclick="renewCurrentContract()" class="bg-ctp-surface0 hover:bg-ctp-surface1 text-ctp-teal border border-ctp-surface1 px-4 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2" title="Renovar por +30 Dias">
+                            <i class="fa-solid fa-clock-rotate-left"></i> +30d Renovação
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- SEARCH AND SAVED CONTRACTS LIST -->
+            <div class="glass-panel rounded-2xl p-5 border border-ctp-surface1 shadow-xl flex-1 flex flex-col min-h-[380px]">
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-ctp-surface0">
+                    <h2 class="text-base font-bold text-ctp-sapphire flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked"></i> Base de Dados de Contratos
+                    </h2>
+                    <span id="contracts-count" class="text-xs font-mono bg-ctp-surface0 text-ctp-subtext0 px-2.5 py-0.5 rounded-full border border-ctp-surface1">
+                        0 registos
+                    </span>
+                </div>
+
+                <!-- Search Filter -->
+                <div class="relative mb-4">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-ctp-overlay1">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="renderSavedContracts()" placeholder="Pesquisar por Nome ou ID/Passaporte..."
+                        class="w-full bg-ctp-mantle border border-ctp-surface1 rounded-xl pl-9 pr-3 py-2 text-xs text-ctp-text placeholder-ctp-overlay0 focus:outline-none focus:border-ctp-sapphire transition">
+                </div>
+
+                <!-- Scrollable List -->
+                <div id="contracts-list" class="space-y-2.5 overflow-y-auto max-h-[360px] pr-1 flex-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </section>
+
+        <section class="lg:col-span-7 flex flex-col items-center">
+            
+            <!-- Document View Wrap -->
+            <div id="document-view" class="w-full max-w-[800px] bg-ctp-mantle rounded-2xl p-4 sm:p-8 border border-ctp-surface0 shadow-2xl transition">
+                
+                <!-- DOCUMENT A4 SHEET SIMULATION -->
+                <div class="document-sheet bg-white text-gray-900 rounded-lg p-6 sm:p-10 shadow-inner border border-gray-300 relative min-h-[1050px] flex flex-col justify-between font-sans">
+                    
+                    <!-- Background Watermark -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+                        <i class="fa-solid fa-truck-medical text-[300px] text-yellow-600"></i>
+                    </div>
+
+                    <!-- Header Section -->
+                    <div>
+                        <div class="flex justify-between items-start border-b-2 border-yellow-500 pb-5 mb-6">
+                            <div class="flex items-center gap-4">
+                                <!-- Emblem Placeholder -->
+                                <div class="w-16 h-16 bg-gradient-to-br from-blue-900 to-indigo-950 text-yellow-400 rounded-xl flex flex-col items-center justify-center font-black shadow-md border-2 border-yellow-500">
+                                    <i class="fa-solid fa-star-of-life text-2xl"></i>
+                                    <span class="text-[9px] tracking-widest uppercase text-white mt-0.5">INEM</span>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-extrabold uppercase tracking-tight text-blue-950">
+                                        Instituto Nacional de Emergência Médica
+                                    </h2>
+                                    <p class="text-xs font-semibold text-yellow-700 tracking-wider uppercase">
+                                        Serviço de Saúde e Socorro Operacional — GTA RP
+                                    </p>
+                                    <p class="text-[11px] text-gray-500">
+                                        Ministério da Saúde • Comando Central de Operações
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="doc-badge-status" class="inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                    ATIVO
+                                </span>
+                                <p class="text-[11px] font-mono text-gray-500 mt-2">
+                                    Ref: <span id="doc-contract-num" class="font-bold text-gray-800">INEM-2026-0001</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Contract Title -->
+                        <div class="text-center my-6">
+                            <h1 class="text-2xl font-black text-blue-950 uppercase tracking-wide decoration-yellow-500 underline underline-offset-8">
+                                Contrato Individual de Trabalho
+                            </h1>
+                            <p class="text-xs text-gray-500 italic mt-2">Vínculo de Prestação de Serviços de Emergência Médica</p>
+                        </div>
+
+                        <!-- Primary Metadata Grid -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 grid grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <span class="text-gray-500 uppercase font-bold text-[10px] block">Colaborador / Profissional</span>
+                                <span id="doc-fullname" class="font-bold text-sm text-gray-900 block">Dr. Afonso Salgado</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 uppercase font-bold text-[10px] block">Identificação / Passaporte</span>
+                                <span id="doc-passport" class="font-mono font-bold text-sm text-gray-900 block">#10482</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 uppercase font-bold text-[10px] block">Função / Cargo Atribuído</span>
+                                <span id="doc-role" class="font-bold text-blue-900 block">Médico Estagiário</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 uppercase font-bold text-[10px] block">Período de Validade</span>
+                                <span class="font-mono text-gray-800 block">
+                                    <span id="doc-start-date">2026-09-18</span> até <span id="doc-end-date" class="font-bold text-blue-950">2026-10-18</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Document Clauses Body -->
+                        <div class="space-y-4 text-xs text-gray-700 leading-relaxed">
+                            <div class="border-l-2 border-yellow-500 pl-3">
+                                <h3 class="font-bold text-gray-900 text-xs uppercase mb-0.5">Cláusula 1ª — (Objeto e Função)</h3>
+                                <p>
+                                    Pelo presente documento, o funcionário supramencionado compromete-se a prestar serviços médicos de emergência, socorro e transporte de doentes na jurisdição, sob as diretrizes do regulamento interno do INEM.
+                                </p>
+                            </div>
+
+                            <div class="border-l-2 border-yellow-500 pl-3">
+                                <h3 class="font-bold text-gray-900 text-xs uppercase mb-0.5">Cláusula 2ª — (Conduta e Exclusividade)</h3>
+                                <p>
+                                    O colaborador obriga-se a manter rigoroso sigilo profissional, respeitar a cadeia de comando operacional e utilizar exclusivamente os equipamentos oficiais homologados durante o horário de serviço ativo.
+                                </p>
+                            </div>
+
+                            <div class="border-l-2 border-yellow-500 pl-3">
+                                <h3 class="font-bold text-gray-900 text-xs uppercase mb-0.5">Cláusula 3ª — (Validade Jurídica e Revogação no RP)</h3>
+                                <p class="bg-yellow-50 p-2.5 rounded border border-yellow-200 text-gray-800">
+                                    <strong>Aviso Legal do Estado:</strong> A validade legal deste contrato está estritamente condicionada à presença ativa do colaborador na <strong>Base de Dados Central do INEM / Discord Oficial</strong>. A posse deste suporte físico após exoneração ou demissão constitui infração grave (Crime de Usurpação de Funções) passível de ação judicial pelas autoridades policiais.
+                                </p>
+                            </div>
+
+                            <!-- Dynamic Special Notes -->
+                            <div id="doc-notes-container" class="border-l-2 border-blue-800 pl-3 pt-1">
+                                <h3 class="font-bold text-blue-950 text-xs uppercase mb-0.5">Cláusula Adicional / Observações</h3>
+                                <p id="doc-notes" class="italic text-gray-800">
+                                    Sem observações adicionais registadas na presente data.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer & Signatures Section -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <div class="grid grid-cols-2 gap-8 text-center text-xs mb-8">
+                            <div class="flex flex-col items-center">
+                                <div class="h-12 border-b border-gray-400 w-4/5 flex items-end justify-center pb-1">
+                                    <span class="font-serif italic text-sm text-blue-950">Direção Geral do INEM</span>
+                                </div>
+                                <span class="font-bold text-gray-800 mt-1 uppercase text-[10px]">A Direção / Comando Operacional</span>
+                                <span class="text-[9px] text-gray-400">Assinatura e Carimbo Oficial</span>
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <div class="h-12 border-b border-gray-400 w-4/5 flex items-end justify-center pb-1">
+                                    <span id="doc-sig-name" class="font-serif italic text-sm text-gray-700">Dr. Afonso Salgado</span>
+                                </div>
+                                <span class="font-bold text-gray-800 mt-1 uppercase text-[10px]">O Funcionário / Contratado</span>
+                                <span class="text-[9px] text-gray-400">Assinatura Digital Confirmada</span>
+                            </div>
+                        </div>
+
+                        <!-- Verification Footer Bar -->
+                        <div class="bg-gray-100 rounded-lg p-2.5 flex justify-between items-center text-[10px] font-mono text-gray-500 border border-gray-200">
+                            <div>
+                                Hash de Segurança: <span id="doc-security-hash" class="font-bold text-gray-700">INEM-SEC-8F92A1</span>
+                            </div>
+                            <div>
+                                Emitido a: <span id="doc-issue-timestamp">18/09/2026 19:10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Storage Key
+        const STORAGE_KEY = 'inem_rp_contracts_db_v1';
+
+        // In-memory Contract Store
+        let contractsDB = [];
+
+        // App Initialization
+        window.onload = function() {
+            loadContractsFromStorage();
+            
+            // Set default dates if empty
+            const today = new Date().toISOString().split('T')[0];
+            const nextMonth = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+            document.getElementById('input-start-date').value = today;
+            document.getElementById('input-end-date').value = nextMonth;
+            
+            generateContractNumber();
+            updateLivePreview();
+            renderSavedContracts();
+        };
+
+        // Generate dynamic Unique Contract Number
+        function generateContractNumber() {
+            const year = new Date().getFullYear();
+            const randomCode = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('input-contract-num').value = `INEM-${year}-${randomCode}`;
+            updateLivePreview();
+        }
+
+        // Live preview synchronization
+        function updateLivePreview() {
+            const fullname = document.getElementById('input-fullname').value || 'Dr. [Nome do Profissional]';
+            const passport = document.getElementById('input-passport').value || '00000';
+            const contractNum = document.getElementById('input-contract-num').value || 'INEM-2026-XXXX';
+            const role = document.getElementById('input-role').value;
+            const status = document.getElementById('input-status').value;
+            const startDate = document.getElementById('input-start-date').value || '---';
+            const endDate = document.getElementById('input-end-date').value || '---';
+            const notes = document.getElementById('input-notes').value;
+
+            // DOM elements in Document View
+            document.getElementById('doc-fullname').innerText = fullname;
+            document.getElementById('doc-passport').innerText = '#' + passport;
+            document.getElementById('doc-contract-num').innerText = contractNum;
+            document.getElementById('doc-role').innerText = role;
+            document.getElementById('doc-start-date').innerText = startDate;
+            document.getElementById('doc-end-date').innerText = endDate;
+            document.getElementById('doc-sig-name').innerText = fullname;
+
+            // Status Badge Formatting
+            const badge = document.getElementById('doc-badge-status');
+            if (status === 'Ativo') {
+                badge.className = 'inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300';
+                badge.innerText = 'ATIVO';
+            } else if (status === 'Suspenso') {
+                badge.className = 'inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300';
+                badge.innerText = 'SUSPENSO';
+            } else {
+                badge.className = 'inline-block px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800 border border-rose-300';
+                badge.innerText = 'RESCINDIDO / EXONERADO';
+            }
+
+            // Notes field logic
+            const notesContainer = document.getElementById('doc-notes-container');
+            if (notes.trim() !== '') {
+                notesContainer.style.display = 'block';
+                document.getElementById('doc-notes').innerText = notes;
+            } else {
+                notesContainer.style.display = 'block';
+                document.getElementById('doc-notes').innerText = 'Sem observações adicionais registadas na presente data.';
+            }
+
+            // Generate Hash
+            const rawHash = (fullname + passport + contractNum + startDate).toUpperCase();
+            let hashVal = 0;
+            for (let i = 0; i < rawHash.length; i++) {
+                hashVal = ((hashVal << 5) - hashVal) + rawHash.charCodeAt(i);
+                hashVal |= 0;
+            }
+            document.getElementById('doc-security-hash').innerText = 'INEM-SEC-' + Math.abs(hashVal).toString(16).toUpperCase();
+            document.getElementById('doc-issue-timestamp').innerText = new Date().toLocaleString('pt-PT');
+        }
+
+        // Save / Update Contract in LocalStorage
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const currentId = document.getElementById('contract-id').value;
+            const contractData = {
+                id: currentId ? currentId : 'cnt_' + Date.now(),
+                fullname: document.getElementById('input-fullname').value,
+                passport: document.getElementById('input-passport').value,
+                contractNum: document.getElementById('input-contract-num').value,
+                role: document.getElementById('input-role').value,
+                status: document.getElementById('input-status').value,
+                startDate: document.getElementById('input-start-date').value,
+                endDate: document.getElementById('input-end-date').value,
+                notes: document.getElementById('input-notes').value,
+                updatedAt: new Date().toISOString()
+            };
+
+            const existingIndex = contractsDB.findIndex(c => c.id === contractData.id);
+            if (existingIndex >= 0) {
+                contractsDB[existingIndex] = contractData;
+            } else {
+                contractsDB.unshift(contractData);
+            }
+
+            saveContractsToStorage();
+            renderSavedContracts();
+            
+            // Mark form as current ID
+            document.getElementById('contract-id').value = contractData.id;
+            document.getElementById('form-mode-indicator').innerText = 'Guardado!';
+            setTimeout(() => {
+                document.getElementById('form-mode-indicator').innerText = 'Modo: Edição';
+            }, 2000);
+        }
+
+        // Render Contracts List in Left Sidebar
+        function renderSavedContracts() {
+            const listEl = document.getElementById('contracts-list');
+            const searchQuery = (document.getElementById('search-input').value || '').toLowerCase();
+
+            const filtered = contractsDB.filter(c => 
+                c.fullname.toLowerCase().includes(searchQuery) ||
+                c.passport.toLowerCase().includes(searchQuery) ||
+                c.contractNum.toLowerCase().includes(searchQuery)
+            );
+
+            document.getElementById('contracts-count').innerText = `${filtered.length} de ${contractsDB.length}`;
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-8 text-ctp-overlay1 text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                        Nenhum contrato encontrado.
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(item => {
+                const isSelected = document.getElementById('contract-id').value === item.id;
+                
+                let badgeClass = 'bg-ctp-green/10 text-ctp-green border-ctp-green/20';
+                if (item.status === 'Suspenso') badgeClass = 'bg-ctp-yellow/10 text-ctp-yellow border-ctp-yellow/20';
+                if (item.status === 'Rescindido') badgeClass = 'bg-ctp-red/10 text-ctp-red border-ctp-red/20';
+
+                return `
+                    <div onclick="loadContractIntoForm('${item.id}')" 
+                        class="p-3 rounded-xl border transition cursor-pointer flex justify-between items-center gap-3 ${isSelected ? 'bg-ctp-surface0 border-ctp-mauve shadow-md' : 'bg-ctp-mantle border-ctp-surface0 hover:border-ctp-surface1'}">
+                        
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-xs font-bold text-ctp-text truncate">${escapeHTML(item.fullname)}</h4>
+                                <span class="text-[10px] font-mono text-ctp-subtext0">#${escapeHTML(item.passport)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1 text-[10px] text-ctp-overlay1">
+                                <span class="text-ctp-teal font-medium">${escapeHTML(item.role)}</span>
+                                <span>•</span>
+                                <span class="font-mono">${escapeHTML(item.contractNum)}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md border ${badgeClass}">
+                                ${escapeHTML(item.status)}
+                            </span>
+                            <button onclick="event.stopPropagation(); deleteContract('${item.id}')" class="text-ctp-overlay0 hover:text-ctp-red text-xs transition px-1" title="Eliminar">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load contract from database into Form
+        function loadContractIntoForm(id) {
+            const contract = contractsDB.find(c => c.id === id);
+            if (!contract) return;
+
+            document.getElementById('contract-id').value = contract.id;
+            document.getElementById('input-fullname').value = contract.fullname;
+            document.getElementById('input-passport').value = contract.passport;
+            document.getElementById('input-contract-num').value = contract.contractNum;
+            document.getElementById('input-role').value = contract.role;
+            document.getElementById('input-status').value = contract.status;
+            document.getElementById('input-start-date').value = contract.startDate;
+            document.getElementById('input-end-date').value = contract.endDate;
+            document.getElementById('input-notes').value = contract.notes || '';
+
+            updateLivePreview();
+            renderSavedContracts();
+        }
+
+        // Clear Form for New Contract
+        function createNewContract() {
+            document.getElementById('contract-id').value = '';
+            document.getElementById('input-fullname').value = '';
+            document.getElementById('input-passport').value = '';
+            document.getElementById('input-role').value = 'Médico Estagiário';
+            document.getElementById('input-status').value = 'Ativo';
+            
+            const today = new Date().toISOString().split('T')[0];
+            const nextMonth = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+            document.getElementById('input-start-date').value = today;
+            document.getElementById('input-end-date').value = nextMonth;
+            document.getElementById('input-notes').value = '';
+
+            generateContractNumber();
+            renderSavedContracts();
+        }
+
+        // Renew validity date (+30 days)
+        function renewCurrentContract() {
+            const currentEndDate = document.getElementById('input-end-date').value;
+            let baseDate = currentEndDate ? new Date(currentEndDate) : new Date();
+            
+            if (isNaN(baseDate.getTime())) baseDate = new Date();
+
+            baseDate.setDate(baseDate.getDate() + 30);
+            document.getElementById('input-end-date').value = baseDate.toISOString().split('T')[0];
+            document.getElementById('input-status').value = 'Ativo';
+
+            updateLivePreview();
+        }
+
+        // Delete contract from local storage
+        function deleteContract(id) {
+            contractsDB = contractsDB.filter(c => c.id !== id);
+            saveContractsToStorage();
+            
+            if (document.getElementById('contract-id').value === id) {
+                createNewContract();
+            } else {
+                renderSavedContracts();
+            }
+        }
+
+        // Storage Operations
+        function saveContractsToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(contractsDB));
+        }
+
+        function loadContractsFromStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    contractsDB = JSON.parse(stored);
+                }
+            } catch (err) {
+                console.error("Erro ao carregar do localStorage:", err);
+                contractsDB = [];
+            }
+        }
+
+        // Backup and Restore via JSON
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(contractsDB, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `INEM_Contratos_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importDataJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        contractsDB = importedData;
+                        saveContractsToStorage();
+                        renderSavedContracts();
+                        alert("Base de dados de contratos importada com sucesso!");
+                    } else {
+                        alert("Ficheiro JSON inválido.");
+                    }
+                } catch (err) {
+                    alert("Erro ao ler ficheiro JSON.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Helper string sanitizer
+        function escapeHTML(str) {
+            return String(str || '').replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
