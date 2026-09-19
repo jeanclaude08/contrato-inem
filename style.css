@@ -1,0 +1,792 @@
+/* ==========================================================
+   INEM · Gestor de Contratos — tema Darkside
+   ========================================================== */
+
+:root {
+  --bg: #121212;
+  --panel: #1c1d21;
+  --panel-deep: #141518;
+  --border: #2d3038;
+  --gold: #ffcc00;
+  --gold-hover: #ffd83d;
+  --cyan: #7ed6df;
+  --text: #f2f3f5;
+  --muted: #a3a8b1;
+  --ok: #5fd38d;
+  --warn: #f5b642;
+  --bad: #ff7a70;
+
+  --font-ui: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  --font-doc: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 15px/1.5 var(--font-ui);
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.app {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand h1 {
+  font: 700 28px/1 var(--font-display);
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.brand p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.emblem {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  color: var(--gold);
+  --emblem-detail: #121212;
+}
+
+/* ---------- Layout de duas colunas ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 480px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  padding: 28px;
+}
+
+.col-left {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.col-right {
+  min-width: 0;
+}
+
+/* ---------- Painéis ---------- */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.panel h2 {
+  font: 600 19px/1.2 var(--font-ui);
+  margin-bottom: 18px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.panel-head h2 {
+  margin-bottom: 0;
+}
+
+.count {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ---------- Formulário ---------- */
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  color: #d6d9df;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--panel-deep);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6d727c;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(126, 214, 223, 0.18);
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%237ED6DF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+}
+
+option {
+  background: var(--panel);
+  color: var(--text);
+}
+
+textarea {
+  height: 80px;
+  resize: none !important;
+  line-height: 1.45;
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.input-group input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ---------- Botões ---------- */
+
+.btn {
+  padding: 11px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  font: 600 15px/1.2 var(--font-ui);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.05s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible,
+.record-main:focus-visible,
+.record-del:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #121212;
+}
+
+.btn-primary:hover {
+  background: var(--gold-hover);
+}
+
+.btn-secondary {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.btn-secondary:hover {
+  background: rgba(126, 214, 223, 0.1);
+}
+
+.btn-ghost {
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.btn-ghost:hover {
+  border-color: var(--cyan);
+  color: var(--text);
+}
+
+.btn-sm {
+  padding: 9px 12px;
+  font-size: 14px;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-actions .btn {
+  flex: 1 1 calc(50% - 6px);
+}
+
+.form-actions .btn-block {
+  flex-basis: 100%;
+}
+
+/* ---------- Base de dados local ---------- */
+
+.record-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0 4px 0 0;
+  max-height: 340px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3e48 transparent;
+}
+
+.record {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 8px;
+  background: #17181b;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease;
+}
+
+.record:hover {
+  border-color: #454955;
+}
+
+.record.is-active {
+  border-color: var(--cyan);
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.record-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.record-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.record-name {
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.pill {
+  flex: none;
+  padding: 1px 9px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pill[data-estado='Ativo'] { color: var(--ok); }
+.pill[data-estado='Suspenso'] { color: var(--warn); }
+.pill[data-estado='Rescindido'] { color: var(--bad); }
+
+.record-del {
+  flex: none;
+  width: 40px;
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.record-del:hover {
+  color: var(--bad);
+  background: rgba(255, 122, 112, 0.08);
+}
+
+.record-empty {
+  padding: 16px 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.db-actions {
+  margin-top: 0;
+}
+
+.db-actions .btn {
+  flex: 1 1 calc(50% - 6px);
+}
+
+/* ---------- Notificação ---------- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 50;
+  max-width: min(92vw, 520px);
+  padding: 12px 18px;
+  background: var(--panel);
+  border: 1px solid var(--cyan);
+  border-radius: 8px;
+  color: var(--text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast.is-erro {
+  border-color: var(--bad);
+}
+
+/* ==========================================================
+    Folha A4 do contrato
+   ========================================================== */
+
+.preview-note {
+  max-width: 800px;
+  margin: 0 auto 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sheet {
+  --paper-ink: #111111;
+  --paper-muted: #5b6068;
+  --paper-line: #d9dbe0;
+  --paper-blue: #0b4a72;
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 56px 64px;
+  aspect-ratio: 210 / 297;
+  background: #ffffff;
+  color: #111111;
+  font-family: var(--font-doc);
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    0 28px 60px rgba(0, 0, 0, 0.35);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* PREVENÇÃO ABSOLUTA DE QUEBRA DE LAYOUT */
+#document-view * {
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+}
+
+/* Permite que itens flex/grid encolham em vez de esticarem a folha */
+#document-view * {
+  min-width: 0;
+}
+
+.doc-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.doc-emblem {
+  width: 58px;
+  height: 58px;
+  color: var(--paper-blue);
+  --emblem-detail: #ffffff;
+}
+
+.doc-org {
+  flex: 1 1 auto;
+}
+
+.doc-org-name {
+  font: 700 30px/1 var(--font-display);
+  letter-spacing: 0.05em;
+  color: var(--paper-blue);
+}
+
+.doc-org-full {
+  margin-top: 4px;
+  font: 500 13px/1.3 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.doc-ref {
+  flex: 0 1 auto;
+  text-align: right;
+}
+
+.doc-ref-label {
+  font: 500 12.5px/1.3 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.doc-ref-number {
+  font: 600 16px/1.3 var(--font-ui);
+}
+
+.doc-rule {
+  height: 8px;
+  margin: 18px 0 30px;
+  background: linear-gradient(to bottom, #ffcc00 0 4px, transparent 4px 6px, #7ed6df 6px 8px);
+}
+
+.doc-title {
+  text-align: center;
+  font: 700 27px/1.2 var(--font-doc);
+  letter-spacing: 0.01em;
+}
+
+.doc-subtitle {
+  margin-top: 2px;
+  text-align: center;
+  font: 500 14px/1.4 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.doc-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 28px;
+  margin: 26px 0;
+  padding: 16px 18px;
+  background: #fafbfc;
+  border: 1px solid var(--paper-line);
+  border-left: 4px solid #ffcc00;
+}
+
+.doc-field-label {
+  display: block;
+  font: 500 12.5px/1.3 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.doc-field-value {
+  display: block;
+  font: 600 15px/1.4 var(--font-ui);
+}
+
+.estado-tag {
+  display: inline-block !important;
+  padding: 0 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+.estado-tag[data-estado='Ativo'] { color: #1b7a3d; }
+.estado-tag[data-estado='Suspenso'] { color: #a56a00; }
+.estado-tag[data-estado='Rescindido'] { color: #b3261e; }
+
+.doc-intro {
+  margin-bottom: 8px;
+  text-align: justify;
+}
+
+.clause {
+  margin-top: 16px;
+}
+
+.clause h3 {
+  font: 700 14px/1.4 var(--font-doc);
+}
+
+.clause p {
+  text-align: justify;
+}
+
+.is-empty {
+  color: #8a8f98;
+  font-weight: 400;
+}
+
+.signatures {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 48px;
+  margin-top: 64px;
+}
+
+.sign {
+  padding-top: 8px;
+  border-top: 1px solid var(--paper-ink);
+  text-align: center;
+}
+
+.sign-role {
+  font: 500 12.5px/1.3 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.sign-name {
+  font-weight: 600;
+}
+
+.doc-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--paper-line);
+  font: 400 11.5px/1.5 var(--font-ui);
+  color: var(--paper-muted);
+}
+
+.doc-foot-note {
+  flex-basis: 100%;
+}
+
+/* Espaço entre o conteúdo e o rodapé quando a folha é curta */
+.signatures {
+  margin-bottom: 40px;
+}
+
+/* ==========================================================
+   Responsivo
+   ========================================================== */
+
+@media (max-width: 1180px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .col-left {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header,
+  .layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .field-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .sheet {
+    padding: 32px 22px;
+  }
+
+  .doc-head {
+    flex-wrap: wrap;
+  }
+
+  .doc-ref {
+    flex-basis: 100%;
+    text-align: left;
+  }
+
+  .doc-meta,
+  .signatures {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .signatures {
+    gap: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Os espaçadores não existem no ecrã */
+.print-spacer {
+  display: none;
+}
+
+/* ==========================================================
+   Impressão / PDF — só a folha A4
+
+   A margem da página (@page) é 0 de propósito: sem margem, o
+   navegador não tem onde desenhar o título, o endereço, a data
+   e o número de páginas. As margens reais são feitas pelo
+   padding lateral da folha e pelos espaçadores (que se repetem
+   no topo e no fim de cada página).
+   ========================================================== */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    margin: 0;
+    background: #ffffff !important;
+    min-height: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .app-header,
+  .col-left,
+  .preview-note,
+  .toast {
+    display: none !important;
+  }
+
+  .app,
+  .layout {
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Tabela "invisível": o cabeçalho e o rodapé do grupo repetem-se em cada página */
+  .col-right {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-spacer-top {
+    display: table-header-group;
+  }
+
+  .print-spacer-bottom {
+    display: table-footer-group;
+  }
+
+  .print-spacer > div {
+    height: 14mm;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0 16mm;
+    aspect-ratio: auto;
+    min-height: 267mm;
+    box-shadow: none;
+  }
+
+  .clause,
+  .signatures,
+  .doc-meta {
+    break-inside: avoid;
+  }
+}
